@@ -3,22 +3,32 @@ import React, { useState } from 'react';
 import { Ratings } from './ratings.js';
 import { Grid, Typography, Button } from "@mui/material";
 
-const data = {'Block1': {'target10': {'face': {'Bossy': 0, 'Easygoing': 0, 'Passive': 0},
-   'video': {'Passive': 0, 'Bossy': 0, 'Easygoing': 0},
-   'convo': {'Easygoing': 0, 'Bossy': 0, 'Passive': 0},
-   'self': {'Rationality': 0, 'Impact': 0, 'Valence': 0},
-   'partnerState': {'Rationality': 0, 'Impact': 0, 'Valence': 0},
-   'partnerTrait': {'Passive': 0, 'Easygoing': 0, 'Bossy': 0}}},
- 'Block2': {'target13': {'face': {'Bossy': 0, 'Easygoing': 0, 'Passive': 0},
-   'video': {'Bossy': 0, 'Passive': 0, 'Easygoing': 0},
-   'convo': {'Easygoing': 0, 'Passive': 0, 'Bossy': 0},
-   'self': {'Rationality': 0, 'Impact': 0, 'Valence': 0},
-   'partnerState': {'Impact': 0, 'Rationality': 0, 'Valence': 0},
-   'partnerTrait': {'Passive': 0, 'Bossy': 0, 'Easygoing': 0}}}}
+const data = {'Block1': {'target10': {'faceTrait': {'Bossy': 0,
+'Easygoing': 0,
+'Passive': 0},
+'faceState': {'Impact': 0, 'Valence': 0, 'Rationality': 0},
+'videoTrait': {'Passive': 0, 'Easygoing': 0, 'Bossy': 0},
+'videoState': {'Valence': 0, 'Rationality': 0, 'Impact': 0},
+'convoTrait': {'Passive': 0, 'Easygoing': 0, 'Bossy': 0},
+'convoState': {'Impact': 0, 'Valence': 0, 'Rationality': 0},
+'selfState': {'Rationality': 0, 'Valence': 0, 'Impact': 0},
+'partnerTrait': {'Passive': 0, 'Bossy': 0, 'Easygoing': 0},
+'partnerState': {'Impact': 0, 'Valence': 0, 'Rationality': 0}}},
+'Block2': {'target13': {'faceTrait': {'Passive': 0,
+'Bossy': 0,
+'Easygoing': 0},
+'faceState': {'Valence': 0, 'Impact': 0, 'Rationality': 0},
+'videoTrait': {'Bossy': 0, 'Easygoing': 0, 'Passive': 0},
+'videoState': {'Valence': 0, 'Rationality': 0, 'Impact': 0},
+'convoTrait': {'Passive': 0, 'Easygoing': 0, 'Bossy': 0},
+'convoState': {'Impact': 0, 'Rationality': 0, 'Valence': 0},
+'selfState': {'Impact': 0, 'Rationality': 0, 'Valence': 0},
+'partnerTrait': {'Easygoing': 0, 'Passive': 0, 'Bossy': 0},
+'partnerState': {'Impact': 0, 'Valence': 0, 'Rationality': 0}}}}
 
 const blockList = [];
 const targetList = [];
-const stimList = ["face","video","convo","self","partnerState","partnerTrait"];
+const stimList = ["faceTrait", "faceState", "videoTrait", "videoState","convoTrait","convoState","selfState","partnerTrait","partnerState"];
 const traitList = [];
 
 for (let block in data) {
@@ -40,33 +50,25 @@ export const Experiment = ({ pageEvent }) => {
   const [targetState,setTargetState] = useState(0); 
   const [stimState, setStimState] = useState(0);
   const [traitState,setTraitState] = useState(0);
-  const [rating1, setRating1] = useState(0)
-  const [rating2, setRating2] = useState(0)
-  const [rating3, setRating3] = useState(0)
+  const [rating, setRating] = useState(0);
+  const [progress, setProgress] = useState(0);
 
-  const handleChange1 = (e) => {
-    setRating1(e.target.value);
-  }
-  const handleChange2 = (e) => {
-    setRating2(e.target.value);
-  }
-  const handleChange3 = (e) => {
-    setRating3(e.target.value);
+  const saveRating = (e) => {
+    setRating(e.target.value);
   }
 
   const saveData = () => {
-    data[blockList[blockState]][targetList[targetState]][stimList[stimState]][traitList[blockState][traitState]] = rating1;
-    data[blockList[blockState]][targetList[targetState]][stimList[stimState]][traitList[blockState][traitState+1]] = rating2;
-    data[blockList[blockState]][targetList[targetState]][stimList[stimState]][traitList[blockState][traitState+2]] = rating3;
-    setRating1(0);
-    setRating2(0);
-    setRating3(0);
+    data[blockList[blockState]][targetList[targetState]][stimList[stimState]][traitList[blockState][traitState]] = rating;
+    setRating(0);
   }
-  
-  const nextTrial = () => {
-    saveData();
-    setStimState((prev) => prev + 1);
-    setTraitState((prev) => prev + 3);
+
+  const nextTrait = () => {
+    setTraitState((prev) => prev + 1);
+    setProgress((prev) => prev + 1);
+    if (progress === 2){
+      setStimState((prev) => prev + 1);
+      setProgress(0)
+    }
   }
   
   const advBlock = () => {
@@ -78,98 +80,138 @@ export const Experiment = ({ pageEvent }) => {
 
   return (
     <>
-      {stimList[stimState] === "face" && 
+      {stimList[stimState] === "faceTrait" && 
         <>
-          <Grid container justifyContent="center" alignItems="center">
-          <Typography style={{color: "#353834"}}>
+          <Grid container justifyContent="center" paddingTop={10}>
+          <Typography style={{color: "#353834"}} align="center">
             <img src={`stim/${targetList[targetState]}/face.png`} alt="face" />
-            <p>How would you rate this person on the following traits?</p>
+            <p>How would you rate this person on the following trait?</p>
           </Typography>
           </Grid>
-          <Ratings traitlist={traitList} blockstate={blockState} traitstate={traitState} change1={handleChange1} change2={handleChange2} change3={handleChange3} advStim={nextTrial} />
+          <Ratings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={saveRating} advTrait={nextTrait} />
         </>
       }
 
-      {stimList[stimState] === "video" && 
+      {stimList[stimState] === "faceState" && 
         <>
-          <Grid container justifyContent="center">
-          <Typography style={{color: "#353834"}}>
+          <Grid container justifyContent="center" paddingTop={10}>
+          <Typography style={{color: "#353834"}} align="center">
+            <img src={`stim/${targetList[targetState]}/face.png`} alt="face" />
+            <p>How would you rate this person on the following state? </p>
+          </Typography>
+          </Grid>
+          <Ratings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={saveRating} advTrait={nextTrait} />
+        </>
+      }
+
+      {stimList[stimState] === "videoTrait" && 
+        <>
+          <Grid container justifyContent="center" paddingTop={10}>
+          <Typography style={{color: "#353834"}} align="center">
+            <video src={`stim/${targetList[targetState]}/video.mp4`} width="320" height="240" controls>Unable to load video.</video>
+            <p>After watching the video, now how would you rate this person on the following trait? </p>
+          </Typography>
+          </Grid>
+          <Ratings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={saveRating} advTrait={nextTrait} />
+        </>
+      }
+
+      {stimList[stimState] === "videoState" && 
+        <>
+          <Grid container justifyContent="center" paddingTop={10}>
+          <Typography style={{color: "#353834"}} align="center">
             <video src={`stim/${targetList[targetState]}/video.mp4`}>Unable to load video.</video>
-            <p>After watching the video, now how would you rate this person on the following traits? </p>
+            <p>After watching the video, now how would you rate this person on the following state? </p>
           </Typography>
           </Grid>
-          <Ratings traitlist={traitList} blockstate={blockState} traitstate={traitState} change1={handleChange1} change2={handleChange2} change3={handleChange3} advStim={nextTrial} />
+          <Ratings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={saveRating} advTrait={nextTrait} />
         </>
       }
 
-      {stimList[stimState] === "convo" && 
+      {stimList[stimState] === "convoTrait" && 
         <>
-          <Grid container justifyContent="center">
-          <Typography style={{color: "#353834"}}>
-            <p>After discussing this person with your partner, how would you rate this person on the following traits?</p>
+          <Grid container justifyContent="center" paddingTop={10}>
+          <Typography style={{color: "#353834"}} align="center">
+            <img src={`stim/${targetList[targetState]}/face.png`} alt="face" />
+            <p>After discussing this person with your partner, how would you rate this person on the following trait?</p>
           </Typography>
           </Grid>
-          <Ratings traitlist={traitList} blockstate={blockState} traitstate={traitState} change1={handleChange1} change2={handleChange2} change3={handleChange3} advStim={nextTrial} />
+          <Ratings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={saveRating} advTrait={nextTrait} />
         </>
       }
 
-      {stimList[stimState] === "self" && 
+      {stimList[stimState] === "convoState" && 
         <>
-          <Grid container justifyContent="center">
-          <Typography style={{color: "#353834"}}>
-            <p>How would you rate your current experience using these three states?</p>
+          <Grid container justifyContent="center" paddingTop={10}>
+          <Typography style={{color: "#353834"}} align="center">
+            <img src={`stim/${targetList[targetState]}/face.png`} alt="face" />
+            <p>After discussing this person with your partner, how would you rate this person on the following state?</p>
           </Typography>
           </Grid>
-          <Ratings traitlist={traitList} blockstate={blockState} traitstate={traitState} change1={handleChange1} change2={handleChange2} change3={handleChange3} advStim={nextTrial} />
+          <Ratings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={saveRating} advTrait={nextTrait}/>
+        </>
+      }
+
+      {stimList[stimState] === "selfState" && 
+        <>
+          <Grid container justifyContent="center" paddingTop={10}>
+          <Typography style={{color: "#353834"}} align="center">
+            <p>How would you describe your current level of this state?</p>
+          </Typography>
+          </Grid>
+          <Ratings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={saveRating} advTrait={nextTrait}/>
           
         </>
       }
 
-      {stimList[stimState] === "partnerState" && 
+      {stimList[stimState] === "partnerTrait" && 
         <>
-          <Grid container justifyContent="center">
-          <Typography style={{color: "#353834"}}>
-            <p>At this point, which of these three states do you think your partner is currently experiencing? </p>
+          <Grid container justifyContent="center" paddingTop={10}>
+          <Typography style={{color: "#353834"}} align="center">
+            <p>How would you rate your partner on the following trait?</p>
           </Typography>
           </Grid>
-          <Ratings traitlist={traitList} blockstate={blockState} traitstate={traitState} change1={handleChange1} change2={handleChange2} change3={handleChange3} advStim={nextTrial} />
+          <Ratings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={saveRating} advTrait={nextTrait} />
         </>
       }
 
-      {stimList[stimState] === "partnerTrait"&& 
+      {stimList[stimState] === "partnerState"&& 
         <>
-          <Grid container justifyContent="center">
-          <Typography style={{color: "#353834"}}>
-            <p>How would you rate your partner on the following traits?</p>
+          <Grid container justifyContent="center" paddingTop={10}>
+          <Typography style={{color: "#353834"}} align="center">
+            <p>How would you describe your partner's current level of this state?</p>
           </Typography>
           </Grid>
-          <Ratings traitlist={traitList} blockstate={blockState} traitstate={traitState} change1={handleChange1} change2={handleChange2} change3={handleChange3} advStim={nextTrial} />
+          <Ratings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={saveRating} advTrait={nextTrait} />
         </>
       }
 
       {traitState === 18 && 
         <>
-          <Grid container justifyContent="center">
-          <Typography style={{color: "#353834"}}>
+          <Grid container justifyContent="center" paddingTop={10}>
+          <Typography style={{color: "#353834"}} align="center">
             <p>When you're ready, click the button below to begin the next trial.</p>
-          </Typography>
-          </Grid>
+
           <Button style={{color: "#FFFFFF",
                             fontSize: "15px",
-                            marginLeft: "45%",
                             backgroundColor: "#006633"
             }} onClick={advBlock}> Start Next Trial </Button>
+          </Typography>
+          </Grid>
         </>
       }
 
       {blockState === 15 && 
         <>
           <Grid container justifyContent="center">
-          <Typography style={{color: "#353834"}}>
+          <Typography style={{color: "#353834"}} align="center">
             <p>You have completed the study.</p>
+            <Button style={{color: "#FFFFFF",
+                              fontSize: "15px",
+                              backgroundColor: "#006633"
+              }} onClick={pageEvent}> Debrief</Button>
           </Typography>
           </Grid>
-          <button onClick={pageEvent}> Debrief</button>
         </>
       }
     </>
