@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 //import data from '/Users/f004p74/Desktop/web-dev/c-tom-app/src/ctom-data_0.json';
-import { Ratings } from './ratings.js';
+import { TraitRatings } from './traitRatings.js';
+import { StateRatings } from './stateRatings.js';
 import { Grid, Typography, Button } from "@mui/material";
 
 const data = {'Block1': {'target10': {'faceTrait': {'Bossy': 0,
@@ -45,14 +46,27 @@ for (let block in data) {
   traitList.push(r)
 }
 
-export const Experiment = ({ pageEvent }) => {
+export const Experiment = ( props ) => {
   const [blockState,setBlockState] = useState(0);
   const [targetState,setTargetState] = useState(0); 
   const [stimState, setStimState] = useState(0);
   const [traitState,setTraitState] = useState(0);
   const [rating, setRating] = useState(0);
   const [progress, setProgress] = useState(0);
+  const [showButton, setShowButton] = useState(false);
+  const [ready, setReady] = useState(false);
+  const [chat, setChat] = useState(false);
 
+  useEffect(() => {
+      const timer = setTimeout(() => {
+        setShowButton(true);
+      }, 100);
+  
+      return () => {
+        clearTimeout(timer);
+      };
+    }, [showButton]);
+  
   const saveRating = (e) => {
     setRating(e.target.value);
   }
@@ -63,6 +77,8 @@ export const Experiment = ({ pageEvent }) => {
   }
 
   const nextTrait = () => {
+    saveData();
+    setShowButton(false)
     setTraitState((prev) => prev + 1);
     setProgress((prev) => prev + 1);
     if (progress === 2){
@@ -76,6 +92,8 @@ export const Experiment = ({ pageEvent }) => {
     setTargetState((prev) => prev + 1);
     setStimState(0);
     setTraitState(0);
+    setChat(false);
+    setReady(false);
   }
 
   return (
@@ -87,8 +105,15 @@ export const Experiment = ({ pageEvent }) => {
             <img src={`stim/${targetList[targetState]}/face.png`} alt="face" />
             <p>How would you rate this person on the following trait?</p>
           </Typography>
+          <TraitRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={saveRating} />
+                {showButton && 
+                        <Button style={{
+                            color: "#FFFFFF",
+                            fontSize: "15px",
+                            backgroundColor: "#006633",
+                        }} onClick={nextTrait}> Next</Button>
+                }
           </Grid>
-          <Ratings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={saveRating} advTrait={nextTrait} />
         </>
       }
 
@@ -99,8 +124,15 @@ export const Experiment = ({ pageEvent }) => {
             <img src={`stim/${targetList[targetState]}/face.png`} alt="face" />
             <p>How would you rate this person on the following state? </p>
           </Typography>
+          <StateRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={saveRating} />
+                {showButton && 
+                        <Button style={{
+                            color: "#FFFFFF",
+                            fontSize: "15px",
+                            backgroundColor: "#006633",
+                        }} onClick={nextTrait}> Next</Button>
+                }
           </Grid>
-          <Ratings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={saveRating} advTrait={nextTrait} />
         </>
       }
 
@@ -108,11 +140,33 @@ export const Experiment = ({ pageEvent }) => {
         <>
           <Grid container justifyContent="center" paddingTop={10}>
           <Typography style={{color: "#353834"}} align="center">
+            { ready === false &&
+            <>
+            <p>Please confirm your partner is ready to watch the video before pressing play.</p>
             <video src={`stim/${targetList[targetState]}/video.mp4`} width="320" height="240" controls>Unable to load video.</video>
-            <p>After watching the video, now how would you rate this person on the following trait? </p>
+            <br />
+            <Button style={{
+                              color: "#FFFFFF",
+                              fontSize: "15px",
+                              backgroundColor: "#006633",
+                          }} onClick={()=>setReady(true)}>We watched it!</Button>
+            </>}
+
+            {ready === true &&
+            <>
+            <img src={`stim/${targetList[targetState]}/face.png`} alt="face" />
+            <p>After watching the video, how would you rate this person on the following trait? </p>
+            <TraitRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={saveRating} />
+                  {showButton && 
+                          <Button style={{
+                              color: "#FFFFFF",
+                              fontSize: "15px",
+                              backgroundColor: "#006633",
+                          }} onClick={nextTrait}> Next</Button>
+                  }
+              </>}
           </Typography>
           </Grid>
-          <Ratings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={saveRating} advTrait={nextTrait} />
         </>
       }
 
@@ -120,11 +174,18 @@ export const Experiment = ({ pageEvent }) => {
         <>
           <Grid container justifyContent="center" paddingTop={10}>
           <Typography style={{color: "#353834"}} align="center">
-            <video src={`stim/${targetList[targetState]}/video.mp4`}>Unable to load video.</video>
-            <p>After watching the video, now how would you rate this person on the following state? </p>
+            <img src={`stim/${targetList[targetState]}/face.png`} alt="face" />
+            <p>After watching the video, how would you rate this person on the following state? </p>
           </Typography>
+          <StateRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={saveRating} />
+                {showButton && 
+                        <Button style={{
+                            color: "#FFFFFF",
+                            fontSize: "15px",
+                            backgroundColor: "#006633",
+                        }} onClick={nextTrait}> Next</Button>
+                }
           </Grid>
-          <Ratings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={saveRating} advTrait={nextTrait} />
         </>
       }
 
@@ -132,11 +193,32 @@ export const Experiment = ({ pageEvent }) => {
         <>
           <Grid container justifyContent="center" paddingTop={10}>
           <Typography style={{color: "#353834"}} align="center">
-            <img src={`stim/${targetList[targetState]}/face.png`} alt="face" />
-            <p>After discussing this person with your partner, how would you rate this person on the following trait?</p>
+            {chat === false &&
+            <>
+              <img src={`stim/${targetList[targetState]}/face.png`} alt="face" />
+              <p>Take some time to chat about this person with your partner. Click 'next' when you are done.</p>
+              <Button style={{
+                              color: "#FFFFFF",
+                              fontSize: "15px",
+                              backgroundColor: "#006633",
+                          }} onClick={()=>setChat(true)}> Next</Button>
+            </>}
+            {chat &&
+            <>
+              <img src={`stim/${targetList[targetState]}/face.png`} alt="face" />
+              <p>After discussing this person with your partner, how would you rate this person on the following trait?</p>
+              <TraitRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={saveRating} />
+                    {showButton && 
+                            <Button style={{
+                                color: "#FFFFFF",
+                                fontSize: "15px",
+                                backgroundColor: "#006633",
+                            }} onClick={nextTrait}> Next</Button>
+                }
+              </>
+            }
           </Typography>
           </Grid>
-          <Ratings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={saveRating} advTrait={nextTrait} />
         </>
       }
 
@@ -147,8 +229,15 @@ export const Experiment = ({ pageEvent }) => {
             <img src={`stim/${targetList[targetState]}/face.png`} alt="face" />
             <p>After discussing this person with your partner, how would you rate this person on the following state?</p>
           </Typography>
+          <StateRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={saveRating} />
+                {showButton && 
+                        <Button style={{
+                            color: "#FFFFFF",
+                            fontSize: "15px",
+                            backgroundColor: "#006633",
+                        }} onClick={nextTrait}> Next</Button>
+                }
           </Grid>
-          <Ratings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={saveRating} advTrait={nextTrait}/>
         </>
       }
 
@@ -158,9 +247,15 @@ export const Experiment = ({ pageEvent }) => {
           <Typography style={{color: "#353834"}} align="center">
             <p>How would you describe your current level of this state?</p>
           </Typography>
+          <StateRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={saveRating} />
+                {showButton && 
+                        <Button style={{
+                            color: "#FFFFFF",
+                            fontSize: "15px",
+                            backgroundColor: "#006633",
+                        }} onClick={nextTrait}> Next</Button>
+                }
           </Grid>
-          <Ratings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={saveRating} advTrait={nextTrait}/>
-          
         </>
       }
 
@@ -170,8 +265,15 @@ export const Experiment = ({ pageEvent }) => {
           <Typography style={{color: "#353834"}} align="center">
             <p>How would you rate your partner on the following trait?</p>
           </Typography>
+          <TraitRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={saveRating} />
+                {showButton && 
+                        <Button style={{
+                            color: "#FFFFFF",
+                            fontSize: "15px",
+                            backgroundColor: "#006633",
+                        }} onClick={nextTrait}> Next</Button>
+                }
           </Grid>
-          <Ratings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={saveRating} advTrait={nextTrait} />
         </>
       }
 
@@ -181,12 +283,19 @@ export const Experiment = ({ pageEvent }) => {
           <Typography style={{color: "#353834"}} align="center">
             <p>How would you describe your partner's current level of this state?</p>
           </Typography>
+          <StateRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={saveRating} />
+                {showButton && 
+                        <Button style={{
+                            color: "#FFFFFF",
+                            fontSize: "15px",
+                            backgroundColor: "#006633",
+                        }} onClick={nextTrait}> Next</Button>
+                }
           </Grid>
-          <Ratings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={saveRating} advTrait={nextTrait} />
         </>
       }
 
-      {traitState === 18 && 
+      {traitState === 27 && 
         <>
           <Grid container justifyContent="center" paddingTop={10}>
           <Typography style={{color: "#353834"}} align="center">
@@ -209,7 +318,7 @@ export const Experiment = ({ pageEvent }) => {
             <Button style={{color: "#FFFFFF",
                               fontSize: "15px",
                               backgroundColor: "#006633"
-              }} onClick={pageEvent}> Debrief</Button>
+              }} onClick={props.pageEvent}>Download Data</Button>
           </Typography>
           </Grid>
         </>
