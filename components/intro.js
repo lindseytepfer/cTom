@@ -6,11 +6,11 @@ export const Intro = ({ pageEvent }) => {
         <>
             <Grid container justifyContent="center" padding={[10, 10]}>
             <Typography style={{color: "#353834"}} align="center">
-            <h1>Welcome to the Social Collaboration Study!</h1>
+            <h1>Welcome to the Social Judgement Study!</h1>
             
             <p> In this study, you will be asked to rate a person based on
-            a few personality traits. You will make this rating by moving a 
-            slider bar. After you have made a few ratings, you will have the 
+            a few personality traits. You will make this rating by selecting an option. 
+            After you have made a few ratings, you will have the 
             chance to talk more about the person with your partner. That's it!</p>
 
             <p>After finishing all the experiment trials, you will be debriefed,

@@ -8,16 +8,17 @@ export const StateRatings = ( props ) => {
             <Grid container justifyContent="center" paddingTop={2} paddingBottom={5}>
             <Typography style={{color: "rgb(33,37,40)"}} align="center">
                 {
-                    props.traitlist[props.blockstate][props.traitstate] === "Valence" &&
+                    props.traitlist[props.blockstate][props.traitstate] === "Valence" && 
                     <>  
                         (negative)
                         <FormControl>
                         <FormLabel id="demo-radio-buttons-group-label">{props.traitlist[props.blockstate][props.traitstate]}</FormLabel>
-                            <RadioGroup row aria-labelledby="demo-radio-buttons-group-label" onChange={props.rating}>
-                                <FormControlLabel value="0" control={<Radio />} label="0" labelPlacement='bottom'/>
+                        DESCRIPTION OF THE STATE
+                            <RadioGroup row aria-labelledby="demo-radio-buttons-group-label" value={props.rating} >
                                 <FormControlLabel value="1" control={<Radio />} label="1" labelPlacement='bottom'/>
                                 <FormControlLabel value="2" control={<Radio />} label="2" labelPlacement='bottom'/>
                                 <FormControlLabel value="3" control={<Radio />} label="3" labelPlacement='bottom'/>
+                                <FormControlLabel value="4" control={<Radio />} label="4" labelPlacement='bottom'/>
                             </RadioGroup>
                         </FormControl>
                         (positive)
@@ -30,11 +31,11 @@ export const StateRatings = ( props ) => {
                         (low)
                         <FormControl>
                         <FormLabel id="demo-radio-buttons-group-label">Social {props.traitlist[props.blockstate][props.traitstate]}</FormLabel>
-                            <RadioGroup row aria-labelledby="demo-radio-buttons-group-label" onChange={props.rating}>
-                                <FormControlLabel value="0" control={<Radio />} label="0" labelPlacement='bottom'/>
+                            <RadioGroup row aria-labelledby="demo-radio-buttons-group-label" value={props.rating} >
                                 <FormControlLabel value="1" control={<Radio />} label="1" labelPlacement='bottom'/>
                                 <FormControlLabel value="2" control={<Radio />} label="2" labelPlacement='bottom'/>
                                 <FormControlLabel value="3" control={<Radio />} label="3" labelPlacement='bottom'/>
+                                <FormControlLabel value="4" control={<Radio />} label="4" labelPlacement='bottom'/>
                             </RadioGroup>
                         </FormControl>
                         (high)
@@ -42,16 +43,16 @@ export const StateRatings = ( props ) => {
                 }
 
                 {
-                    props.traitlist[props.blockstate][props.traitstate] === "Rationality" &&
+                    props.traitlist[props.blockstate][props.traitstate] === "Rationality" && 
                     <>  
                         (emotional)
                         <FormControl>
                         <FormLabel id="demo-radio-buttons-group-label">{props.traitlist[props.blockstate][props.traitstate]}</FormLabel>
-                            <RadioGroup row aria-labelledby="demo-radio-buttons-group-label" onChange={props.rating}>
-                                <FormControlLabel value="0" control={<Radio />} label="0" labelPlacement='bottom'/>
+                            <RadioGroup row aria-labelledby="demo-radio-buttons-group-label" value={props.rating} >
                                 <FormControlLabel value="1" control={<Radio />} label="1" labelPlacement='bottom'/>
                                 <FormControlLabel value="2" control={<Radio />} label="2" labelPlacement='bottom'/>
                                 <FormControlLabel value="3" control={<Radio />} label="3" labelPlacement='bottom'/>
+                                <FormControlLabel value="4" control={<Radio />} label="4" labelPlacement='bottom'/>
                             </RadioGroup>
                         </FormControl>
                         (rational)
