@@ -10,6 +10,8 @@ const data = {'Block1': {'target10': {'faceTrait': {'Bossy': 0,
 'faceState': {'Impact': 0, 'Valence': 0, 'Rationality': 0},
 'videoTrait': {'Passive': 0, 'Easygoing': 0, 'Bossy': 0},
 'videoState': {'Valence': 0, 'Rationality': 0, 'Impact': 0},
+"predictTrait": {'Passive': 0, 'Easygoing': 0, 'Bossy': 0},
+"predictState": {'Impact': 0, 'Valence': 0, 'Rationality': 0},
 'convoTrait': {'Passive': 0, 'Easygoing': 0, 'Bossy': 0},
 'convoState': {'Impact': 0, 'Valence': 0, 'Rationality': 0},
 'selfState': {'Rationality': 0, 'Valence': 0, 'Impact': 0},
@@ -21,6 +23,8 @@ const data = {'Block1': {'target10': {'faceTrait': {'Bossy': 0,
 'faceState': {'Valence': 0, 'Impact': 0, 'Rationality': 0},
 'videoTrait': {'Bossy': 0, 'Easygoing': 0, 'Passive': 0},
 'videoState': {'Valence': 0, 'Rationality': 0, 'Impact': 0},
+"predictTrait": {'Passive': 0, 'Easygoing': 0, 'Bossy': 0},
+"predictState": {'Impact': 0, 'Valence': 0, 'Rationality': 0},
 'convoTrait': {'Passive': 0, 'Easygoing': 0, 'Bossy': 0},
 'convoState': {'Impact': 0, 'Rationality': 0, 'Valence': 0},
 'selfState': {'Impact': 0, 'Rationality': 0, 'Valence': 0},
@@ -170,6 +174,30 @@ export const Experiment = ( props ) => {
           <Grid container justifyContent="center" paddingTop={10}>
           <Typography style={{color: "#353834"}} align="center">
             <p>After watching the video, how would you rate this person on the following state? </p>
+            <img src={`stim/${targetList[targetState]}/face.png`} alt="face" />
+          </Typography>
+          <StateRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={rating} />
+          </Grid>
+        </>
+      }
+
+      {stimList[stimState] === "predictTrait" && showStim &&
+        <>
+          <Grid container justifyContent="center" paddingTop={10}>
+          <Typography style={{color: "#353834"}} align="center">
+            <p>After watching the video, how do you think <strong>your partner</strong> would rate this person on the following trait? </p>
+            <img src={`stim/${targetList[targetState]}/face.png`} alt="face" />
+          </Typography>
+          <TraitRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={rating} />
+          </Grid>
+        </>
+      }
+
+      {stimList[stimState] === "predictState" && showStim &&
+        <>
+          <Grid container justifyContent="center" paddingTop={10}>
+          <Typography style={{color: "#353834"}} align="center">
+            <p>After watching the video, how do you think <strong>your partner</strong> would rate this person on the following state? </p>
             <img src={`stim/${targetList[targetState]}/face.png`} alt="face" />
           </Typography>
           <StateRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={rating} />
