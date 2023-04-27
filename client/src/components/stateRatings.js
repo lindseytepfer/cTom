@@ -10,52 +10,52 @@ export const StateRatings = ( props ) => {
                 {
                     props.traitlist[props.blockstate][props.traitstate] === "Valence" && 
                     <>  
-                        (negative)
                         <FormControl>
                         <FormLabel id="demo-radio-buttons-group-label">{props.traitlist[props.blockstate][props.traitstate]}</FormLabel>
                         DESCRIPTION OF THE STATE
                             <RadioGroup row aria-labelledby="demo-radio-buttons-group-label" value={props.rating} >
+                                <FormLabel labelPlacement="start">Negative</FormLabel>
                                 <FormControlLabel value="1" control={<Radio />} label="1" labelPlacement='bottom'/>
                                 <FormControlLabel value="2" control={<Radio />} label="2" labelPlacement='bottom'/>
                                 <FormControlLabel value="3" control={<Radio />} label="3" labelPlacement='bottom'/>
                                 <FormControlLabel value="4" control={<Radio />} label="4" labelPlacement='bottom'/>
+                                <FormLabel labelPlacement="end">Positive</FormLabel>
                             </RadioGroup>
                         </FormControl>
-                        (positive)
                     </>
                 }
 
                 {
                     props.traitlist[props.blockstate][props.traitstate] === "Impact" &&
                     <>  
-                        (low)
                         <FormControl>
                         <FormLabel id="demo-radio-buttons-group-label">Social {props.traitlist[props.blockstate][props.traitstate]}</FormLabel>
                             <RadioGroup row aria-labelledby="demo-radio-buttons-group-label" value={props.rating} >
+                                <FormLabel labelPlacement="start">Low</FormLabel>
                                 <FormControlLabel value="1" control={<Radio />} label="1" labelPlacement='bottom'/>
                                 <FormControlLabel value="2" control={<Radio />} label="2" labelPlacement='bottom'/>
                                 <FormControlLabel value="3" control={<Radio />} label="3" labelPlacement='bottom'/>
                                 <FormControlLabel value="4" control={<Radio />} label="4" labelPlacement='bottom'/>
+                                <FormLabel labelPlacement="end">High</FormLabel>
                             </RadioGroup>
                         </FormControl>
-                        (high)
                     </>
                 }
 
                 {
                     props.traitlist[props.blockstate][props.traitstate] === "Rationality" && 
                     <>  
-                        (emotional)
                         <FormControl>
                         <FormLabel id="demo-radio-buttons-group-label">{props.traitlist[props.blockstate][props.traitstate]}</FormLabel>
                             <RadioGroup row aria-labelledby="demo-radio-buttons-group-label" value={props.rating} >
+                                <FormLabel labelPlacement="bottom">Emotional</FormLabel>
                                 <FormControlLabel value="1" control={<Radio />} label="1" labelPlacement='bottom'/>
                                 <FormControlLabel value="2" control={<Radio />} label="2" labelPlacement='bottom'/>
                                 <FormControlLabel value="3" control={<Radio />} label="3" labelPlacement='bottom'/>
                                 <FormControlLabel value="4" control={<Radio />} label="4" labelPlacement='bottom'/>
+                                <FormLabel labelPlacement="end">Rational</FormLabel>
                             </RadioGroup>
                         </FormControl>
-                        (rational)
                     </>
                 }
 
