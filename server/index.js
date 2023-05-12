@@ -1,10 +1,11 @@
+const fs = require('fs');
 const express = require("express");
 const app = express();
+const cors = require("cors");
 const http = require("http");
 const { Server } = require("socket.io");
-const cors = require("cors");
-
 app.use(cors());
+
 
 const server = http.createServer(app);
 
@@ -30,4 +31,21 @@ io.on("connection", (socket) => {
 
 server.listen(3001, () => {
     console.log("SERVER IS RUNNING");
+});
+
+app.use(express.json()) // ??
+app.use(express.urlencoded({extended:true})) //??
+
+//get the data from the front end
+
+app.post('/', async(req, res) => {
+	const {data, subjectID, pairID} = req.body
+
+    await fs.writeFile(`pair_${pairID}_sub_${subjectID}_data.json`, JSON.stringify(data), err => {
+		if (err) {
+			console.log(err);
+		} else {
+			console.log("Successfully saved data.");
+		}
+    });
 });
