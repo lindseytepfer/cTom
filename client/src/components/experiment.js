@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { TraitRatings } from './traitRatings.jsx';
-import { StateRatings } from './stateRatings.jsx';
-import { CountdownTimer } from './countdownTimer.jsx';
+import { TraitRatings } from './traitRatings.js';
+import { StateRatings } from './stateRatings.js';
+import { CountdownTimer } from './countdownTimer.js';
 import { Grid, Typography, Button, lighten } from "@mui/material";
 import axios from "axios";
-import { subjectID } from './intro.js';
 
-const subjectID = {subjectID}
-import data from `/Users/f004p74/Desktop/web-dev/c-tom-app/src/ctom-data_${subjectID}.json`;
+//import data from "/Users/f004p74/Desktop/web-dev/c-tom-app/src/ctom-data_0001.json"
 
 const data = {'Block1': {'target10': {'faceTrait': {'Bossy': 0,
 'Easygoing': 0,
@@ -70,7 +68,7 @@ for (let block in data) {
   traitList.push(r)
 }
 
-export const Experiment = ( ) => {
+export const Experiment = ( {subjectID, pairID} ) => {
     // HANDLE RESPONSE COLLECTION
     const [blockState,setBlockState] = useState(0);
     const [targetState,setTargetState] = useState(0); 
@@ -186,7 +184,7 @@ export const Experiment = ( ) => {
     const postData = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('http://localhost:3001/',{data});
+            await axios.post('http://localhost:3001/',{data,subjectID,pairID});
         }
         catch (e) {
             console.log(e);
