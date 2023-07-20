@@ -6,7 +6,6 @@ const http = require("http");
 const { Server } = require("socket.io");
 app.use(cors());
 
-
 const server = http.createServer(app);
 
 const io = new Server(server, {
@@ -26,6 +25,10 @@ io.on("connection", (socket) => {
 
     socket.on("setPair", (data) => {
         socket.join(data);
+    });
+
+    socket.on("client_ready",(socketId) =>{
+        io.emit("server_ready", socket.id)
     });
 });
 
