@@ -68,7 +68,8 @@ for (let block in data) {
   traitList.push(r)
 }
 
-export const Experiment = ( {subjectID, pairID} ) => {
+export const Experiment = ( {subjectID, pairID, socket} ) => {
+
     // HANDLE RESPONSE COLLECTION
     const [blockState,setBlockState] = useState(0);
     const [targetState,setTargetState] = useState(0); 
@@ -83,6 +84,7 @@ export const Experiment = ( {subjectID, pairID} ) => {
     const [convoTrial, setConvoTrial] = useState(false);
     const [continueStudy, setContinueStudy] = useState(true);
     const [stimDisplay, setStimDisplay] = useState(0);
+    const [ready, setReady] = useState([]);
 
     // DETECT KEYPRESS
     useEffect(() => {
@@ -101,6 +103,19 @@ export const Experiment = ( {subjectID, pairID} ) => {
     const saveData = () => {
         data[blockList[blockState]][targetList[targetState]][stimList[stimState]][traitList[blockState][traitState]] = rating;
         }
+    
+    // WEBSOCKET EVENT HANDLING
+
+    const handleSocket = () => {
+        let socketId = socket.id;
+        socket.emit("client_ready",socketId)
+    };
+
+    useEffect(()=>{
+        socket.on("server_ready", (socket_id) => {
+            setReady((ready) => [...new Set([...ready, socket_id])])
+        })
+    },[handleSocket])
 
     // ADVANCING TO THE NEXT BLOCK
     const advanceBlock = () => {
@@ -120,7 +135,7 @@ export const Experiment = ( {subjectID, pairID} ) => {
     }
 
     const handleConvo = () => {
-      if (traitState === 17) {
+      if (traitState === 17) { 
         setConvoTrial(true);
       } else {
         setConvoTrial(false);
@@ -130,6 +145,7 @@ export const Experiment = ( {subjectID, pairID} ) => {
     const advanceTrial = () => {
         if (traitState < 33){
             saveData();
+            setContinueStudy(true);
             setTraitState((prev) => prev + 1);
             setProgress((prev) => prev + 1);
             handleVideo();
@@ -138,7 +154,7 @@ export const Experiment = ( {subjectID, pairID} ) => {
               setStimState((prev) => prev + 1);
               setProgress(0);
             }
-        } else if (traitState === 33 && blockState !== 1) {
+        } else if (traitState === 33 && blockState !== 1 && ready.length === 2) {
             advanceBlock();
         } else if (traitState === 33 && blockState === 1) {
             setContinueStudy(false);
@@ -159,26 +175,40 @@ export const Experiment = ( {subjectID, pairID} ) => {
         };
       }, [traitState]);
 
-      useEffect(() => {
+    // Conditional timing depending on trial type 
+    useEffect(() => {
         const timer = setTimeout(() => {
-          if (traitState === 5){
-            setStimDisplay(videoDurations[targetList[targetState]]) // target's video duration
-            advanceTrial();
-          } else if (traitState === 17) {
-            setStimDisplay(10000);
-            advanceTrial();
-          } else {
-            setStimDisplay(5000);
-            advanceTrial();      
-          }
+            if (traitState === 5) {
+                // setStimDisplay(5000) // for testing
+                setStimDisplay(videoDurations[targetList[targetState]]) // target's video duration
+                advanceTrial();
+            } else if (traitState === 17) {
+                setStimDisplay(120000);
+                advanceTrial();
+            } else if (traitState === 33) {
+                setContinueStudy(false)
+            } else {
+                setStimDisplay(5000); //5000 is 5 seconds
+                advanceTrial();
+            }
         }, stimDisplay);
-
+        
         return () => {
             clearTimeout(timer);
             setRating(null);
-            setShowStim(false)
+            setShowStim(false);
+            setReady([]);
         };
     }, [traitState]);
+
+
+    //END TRIAL WHEN BOTH PARTICIPANTS ARE READY
+    useEffect(() => {
+        if (ready.length === 2) {
+            setStimDisplay(5000);
+            advanceTrial()    
+          }
+    }, [ready.length]);
 
     // SENDING THE DATA TO THE BACKEND
     const postData = async (e) => {
@@ -190,8 +220,10 @@ export const Experiment = ( {subjectID, pairID} ) => {
             console.log(e);
         }
     }
-
-    console.log("blockstate:",blockState, "targetState:",targetState,"stimState:",stimState,"traitState:",traitState,"video:", playVideo,"rating:",rating,data)
+    
+    // MONITOR STATE CHANGES
+    console.log("blockstate:",blockState, "targetState:",targetState,"stimState:",stimState,"traitState:",traitState,"video:", playVideo,
+     "convo:",convoTrial,"stimDisplay:",stimDisplay,"continue study:",continueStudy,"ready:",ready,"ready length:",ready.length,"rating:",rating,data)
     
     return (
         <>
@@ -282,9 +314,11 @@ export const Experiment = ( {subjectID, pairID} ) => {
         <>
           <Grid container justifyContent="center" paddingTop={10}>
           <Typography style={{color: "#353834"}} align="center">
-            <p>Please take a moment to discuss this person with your partner </p>
+            <p>Please take a moment to discuss your impressions of this person with your partner,<br/>
+                and press the button below when you and your partner are ready to move on. </p>
             <img src={`stim/${targetList[targetState]}/face.png`} alt="face" />
             <CountdownTimer />
+            <Button onClick={handleSocket}>Ready</Button>
           </Typography>
           </Grid>
         </>
@@ -349,11 +383,12 @@ export const Experiment = ( {subjectID, pairID} ) => {
             </>
         }
 
-      {traitState === 33 && blockState !== 1 && showStim && continueStudy &&
+      {traitState === 33 && blockState !== 1 && showStim && continueStudy === false &&
         <>
           <Grid container justifyContent="center" paddingTop={10}>
           <Typography style={{color: "#353834"}} align="center">
-            <p>The next trial will begin shortly.</p>
+            <p>Click the button below when you are ready to begin the next trial.</p>
+            <button onClick={handleSocket}>Next trial</button>
           </Typography>
           </Grid>
         </>
