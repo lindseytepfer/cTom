@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Grid, Typography, Button } from "@mui/material";
 
-export const Intro = ({ pageEvent, socket, pairID, setPairID, subjectID}) => {
+export const Intro = ({ pageEvent, socket, pairID, setPairID, subjectID, setSubjectID}) => {
     const [idsReady, setIdsReady] = useState([]);
-    const [subjectID, setSubjectID] = useState([]);
 
     useEffect(() => {
         socket.on("userReady", (id) => {
@@ -29,7 +28,7 @@ export const Intro = ({ pageEvent, socket, pairID, setPairID, subjectID}) => {
     return (
         <>
             <Grid container justifyContent="center" paddingRight={45} paddingLeft={45} paddingTop={10}>
-                <Typography style={{ color: "#353834" }} align="center">
+                <Typography style={{ color: "#353834", fontSize: 20 }} align="center">
                     <h1>Welcome to the Social Judgement Study!</h1>
 
                     <p>
@@ -66,13 +65,15 @@ export const Intro = ({ pageEvent, socket, pairID, setPairID, subjectID}) => {
                     }}
                 />
                 <button onClick={setPair} type="button">
-                    Submit
+                    SUBMIT
                 </button>
-                <Button
+            </Grid>
+            <Grid container justifyContent="center" paddingRight={45} paddingLeft={45} paddingTop={5}>
+            <Button
                     style={{
                         color: "#FFFFFF",
                         fontSize: "15px",
-                        backgroundColor: "#006633",
+                        backgroundColor: "#15b08e",
                     }}
                     onClick={() => {
                         socket.emit("buttonClicked", pairID);

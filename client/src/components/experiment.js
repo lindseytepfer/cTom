@@ -85,7 +85,23 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
     const [continueStudy, setContinueStudy] = useState(true);
     const [stimDisplay, setStimDisplay] = useState(0);
     const [ready, setReady] = useState([]);
-
+    
+    // UPDATING THE DATA OBJECT WITH PARTICIPANT RESPONSES
+    const saveData = () => {
+      data[blockList[blockState]][targetList[targetState]][stimList[stimState]][traitList[blockState][traitState]] = rating;
+    }
+    
+    // SENDING THE DATA TO THE BACKEND
+    const postData = async (e) => {
+      e.preventDefault();
+      try {
+          await axios.post('http://localhost:3001/',{data,subjectID,pairID});
+        }
+      catch (e) {
+          console.log(e);
+        }
+      }
+    
     // DETECT KEYPRESS
     useEffect(() => {
         document.addEventListener('keydown',detectKey,true)
@@ -98,20 +114,14 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
             setRating(0)
         }
     }
-
-    // UPDATING THE DATA OBJECT WITH PARTICIPANT RESPONSES
-    const saveData = () => {
-        data[blockList[blockState]][targetList[targetState]][stimList[stimState]][traitList[blockState][traitState]] = rating;
-        }
     
     // WEBSOCKET EVENT HANDLING
-
     const handleSocket = () => {
         let socketId = socket.id;
-        socket.emit("client_ready",socketId)
-    };
+        socket.emit("client_ready",socketId);
+      }
 
-    useEffect(()=>{
+    useEffect(() => {
         socket.on("server_ready", (socket_id) => {
             setReady((ready) => [...new Set([...ready, socket_id])])
         })
@@ -123,7 +133,8 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
         setTargetState((prev) => prev + 1);
         setStimState(0);
         setTraitState(0);
-    }
+        postData();
+      }
 
     // HANDLE STIMULI PRESENTATION
     const handleVideo = () => {
@@ -209,17 +220,6 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
             advanceTrial()    
           }
     }, [ready.length]);
-
-    // SENDING THE DATA TO THE BACKEND
-    const postData = async (e) => {
-        e.preventDefault();
-        try {
-            await axios.post('http://localhost:3001/',{data,subjectID,pairID});
-        }
-        catch (e) {
-            console.log(e);
-        }
-    }
     
     // MONITOR STATE CHANGES
     console.log("blockstate:",blockState, "targetState:",targetState,"stimState:",stimState,"traitState:",traitState,"video:", playVideo,
@@ -230,7 +230,7 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
         {stimList[stimState] === "faceTrait" && showStim && continueStudy &&
         <>
           <Grid container justifyContent="center" paddingTop={10}>
-          <Typography style={{color: "#353834"}} align="center">
+          <Typography style={{color: "#353834", fontSize: 20}} align="center">
             <p>How would you rate this person on the following trait?</p>
             <img src={`stim/${targetList[targetState]}/face.png`} alt="face" />
             <TraitRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={rating} />
@@ -242,7 +242,7 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
         {stimList[stimState] === "faceState" && showStim && continueStudy &&
         <>
           <Grid container justifyContent="center" paddingTop={10}>
-          <Typography style={{color: "#353834"}} align="center">
+          <Typography style={{color: "#353834", fontSize: 20}} align="center">
             <p>How would you rate this person on the following state? </p>
             <img src={`stim/${targetList[targetState]}/face.png`} alt="face" />
           </Typography>
@@ -254,9 +254,9 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
         {playVideo && showStim && 
         <>
           <Grid container justifyContent="center" paddingTop={10}>
-          <Typography style={{color: "#353834"}} align="center">
-            <p>Please watch the following video </p>
-            <video src={`stim/${targetList[targetState]}/video.mp4`} width="320" height="240" autoPlay>Unable to load video.</video>
+          <Typography style={{color: "#353834", fontSize: 20}} align="center">
+            <p>Please watch the following video: </p>
+            <video src={`stim/${targetList[targetState]}/video.mp4`} width="640" height="360" autoPlay>Unable to load video.</video>
           </Typography>
           </Grid>
         </>
@@ -265,7 +265,7 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
         {stimList[stimState] === "videoTrait" && showStim && playVideo === false && continueStudy &&
         <>
           <Grid container justifyContent="center" paddingTop={10}>
-          <Typography style={{color: "#353834"}} align="center">
+          <Typography style={{color: "#353834", fontSize: 20}} align="center">
             <p>After watching the video, how would you rate this person on the following trait? </p>
             <img src={`stim/${targetList[targetState]}/face.png`} alt="face" />
             <TraitRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={rating} />
@@ -277,7 +277,7 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
         {stimList[stimState] === "videoState" && showStim && playVideo === false && continueStudy &&
             <>
             <Grid container justifyContent="center" paddingTop={10}>
-            <Typography style={{color: "#353834"}} align="center">
+            <Typography style={{color: "#353834", fontSize: 20}} align="center">
                 <p>After watching the video, how would you rate this person on the following state? </p>
                 <img src={`stim/${targetList[targetState]}/face.png`} alt="face" />
                 <StateRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={rating} />
@@ -289,8 +289,8 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
         {stimList[stimState] === "predictTrait" && showStim && continueStudy &&
             <>
             <Grid container justifyContent="center" paddingTop={10}>
-            <Typography style={{color: "#353834"}} align="center">
-                <p>After watching the video, how do you think <strong>your partner</strong> would rate this person on the following trait? </p>
+            <Typography style={{color: "#353834", fontSize: 20}} align="center">
+                <p>After watching the video, how do you think <span style={{color: '#15b08e'}}><strong>your partner</strong></span> would rate this person on the following trait? </p>
                 <img src={`stim/${targetList[targetState]}/face.png`} alt="face" />
                 <TraitRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={rating} />
             </Typography>
@@ -301,8 +301,8 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
         {stimList[stimState] === "predictState" && showStim && continueStudy &&
             <>
             <Grid container justifyContent="center" paddingTop={10}>
-            <Typography style={{color: "#353834"}} align="center">
-                <p>After watching the video, how do you think <strong>your partner</strong> would rate this person on the following state? </p>
+            <Typography style={{color: "#353834", fontSize: 20}} align="center">
+                <p>After watching the video, how do you think <span style={{color: '#15b08e'}}><strong>your partner</strong></span> would rate this person on the following state? </p>
                 <img src={`stim/${targetList[targetState]}/face.png`} alt="face" />
             <StateRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={rating} />
             </Typography>
@@ -313,12 +313,17 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
         {convoTrial && showStim && 
         <>
           <Grid container justifyContent="center" paddingTop={10}>
-          <Typography style={{color: "#353834"}} align="center">
+          <Typography style={{color: "#353834", fontSize: 20}} align="center">
             <p>Please take a moment to discuss your impressions of this person with your partner,<br/>
                 and press the button below when you and your partner are ready to move on. </p>
             <img src={`stim/${targetList[targetState]}/face.png`} alt="face" />
             <CountdownTimer />
-            <Button onClick={handleSocket}>Ready</Button>
+            <br/>
+              <Button style={{
+                color: "#FFFFFF",
+                fontSize: "15px",
+                backgroundColor: "#15b08e",
+                }} onClick={handleSocket}>Ready</Button>
           </Typography>
           </Grid>
         </>
@@ -327,7 +332,7 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
         {stimList[stimState] === "convoTrait" && showStim && convoTrial === false && continueStudy &&
             <>
             <Grid container justifyContent="center" paddingTop={10}>
-            <Typography style={{color: "#353834"}} align="center">
+            <Typography style={{color: "#353834", fontSize: 20}} align="center">
                 <p>After discussing this person with your partner, how would you rate this person on the following trait?</p>
                 <img src={`stim/${targetList[targetState]}/face.png`} alt="face" />
                 <TraitRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={rating} />
@@ -339,7 +344,7 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
         {stimList[stimState] === "convoState" && showStim && convoTrial === false && continueStudy &&
             <>
             <Grid container justifyContent="center" paddingTop={10}>
-            <Typography style={{color: "#353834"}} align="center">
+            <Typography style={{color: "#353834", fontSize: 20}} align="center">
                 <p>After discussing this person with your partner, how would you rate this person on the following state?</p>
                 <img src={`stim/${targetList[targetState]}/face.png`} alt="face" />
             </Typography>
@@ -351,8 +356,8 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
         {stimList[stimState] === "selfState" && showStim && continueStudy &&
             <>
             <Grid container justifyContent="center" paddingTop={10}>
-            <Typography style={{color: "#353834"}} align="center">
-                <h1>Now, tell us about yourself!</h1>
+            <Typography style={{color: "#353834", fontSize: 20}} align="center">
+                <p>Now, tell us about <strong>yourself</strong>!</p>
                 <p>Please rate your current mental state:</p>
             </Typography>
             <StateRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={rating} />
@@ -363,8 +368,8 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
         {stimList[stimState] === "partnerTrait" && showStim && continueStudy &&
             <>
             <Grid container justifyContent="center" paddingTop={10}>
-            <Typography style={{color: "#353834"}} align="center">
-                <h1>Next, tell us what you think about your partner! </h1>
+            <Typography style={{color: "#353834", fontSize: 20}} align="center">
+                <p>Next, tell us what you think about <span style={{color: '#15b08e'}}><strong>your partner</strong></span>! </p>
                 <p>How would you rate your partner on the following trait?</p>
             </Typography>
             <TraitRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={rating} />
@@ -375,8 +380,8 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
         {stimList[stimState] === "partnerState" && showStim && continueStudy &&
             <>
             <Grid container justifyContent="center" paddingTop={10}>
-            <Typography style={{color: "#353834"}} align="center">
-                <p>How would you describe your partner's current level of this state?</p>
+            <Typography style={{color: "#353834", fontSize: 20}} align="center">
+                <p>How would you describe <span style={{color: '#15b08e'}}><strong>your partner's</strong></span> current level of this state?</p>
             <StateRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={rating} />
             </Typography>
             </Grid>
@@ -386,9 +391,13 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
       {traitState === 33 && blockState !== 1 && showStim && continueStudy === false &&
         <>
           <Grid container justifyContent="center" paddingTop={10}>
-          <Typography style={{color: "#353834"}} align="center">
+          <Typography style={{color: "#353834", fontSize: 20}} align="center">
             <p>Click the button below when you are ready to begin the next trial.</p>
-            <button onClick={handleSocket}>Next trial</button>
+            <Button style={{
+                color: "#FFFFFF",
+                fontSize: "15px",
+                backgroundColor: "#15b08e",
+                }} onClick={handleSocket}>Next trial</Button>
           </Typography>
           </Grid>
         </>
@@ -397,11 +406,11 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
       {traitState === 33 && blockState === 1 && showStim && continueStudy === false && 
         <>
           <Grid container justifyContent="center">
-          <Typography style={{color: "#353834"}} align="center">
+          <Typography style={{color: "#353834", fontSize: 20}} align="center">
             <p>You have completed the study.</p>
             <Button style={{color: "#FFFFFF",
                               fontSize: "15px",
-                              backgroundColor: "#006633"
+                              backgroundColor: "#15b08e"
               }} onClick={postData}>Download Data</Button>
           </Typography>
           </Grid>

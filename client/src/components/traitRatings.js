@@ -10,8 +10,9 @@ export const TraitRatings = ( props ) => {
                     props.traitlist[props.blockstate][props.traitstate] === "Bossy" &&
                     <>  
                         <FormControl>
-                        <FormLabel id="demo-radio-buttons-group-label">{props.traitlist[props.blockstate][props.traitstate]}</FormLabel>
-                        DESCRIPTION OF THE TRAIT
+                        <FormLabel id="demo-radio-buttons-group-label"><span style={{color: '#000000', fontSize: 18}}> {props.traitlist[props.blockstate][props.traitstate]}</span>
+                        <p><em>A person who likes giving people orders and wants things their own way.</em></p>
+                        </FormLabel>
                             <RadioGroup row aria-labelledby="demo-radio-buttons-group-label" value={props.rating} >
                                 <FormLabel labelPlacement="start">Not at all Bossy</FormLabel>
                                 <FormControlLabel value="1" control={<Radio />} label="1" labelPlacement='bottom'/>
@@ -28,7 +29,9 @@ export const TraitRatings = ( props ) => {
                     props.traitlist[props.blockstate][props.traitstate] === "Easygoing" &&
                     <>  
                         <FormControl>
-                        <FormLabel id="demo-radio-buttons-group-label">{props.traitlist[props.blockstate][props.traitstate]}</FormLabel>
+                        <FormLabel id="demo-radio-buttons-group-label"><span style={{color: '#000000', fontSize: 18}}>{props.traitlist[props.blockstate][props.traitstate]}</span>
+                        <p><em>A person who is relaxed, tolerant, and not prone to rigid rules or bouts of temper.</em></p>                       
+                        </FormLabel>
                             <RadioGroup row aria-labelledby="demo-radio-buttons-group-label" value={props.rating} >
                                 <FormLabel labelPlacement="start">Not at all Easygoing</FormLabel>
                                 <FormControlLabel value="1" control={<Radio />} label="1" labelPlacement='bottom'/>
@@ -45,7 +48,9 @@ export const TraitRatings = ( props ) => {
                     props.traitlist[props.blockstate][props.traitstate] === "Passive" &&
                     <>  
                         <FormControl>
-                        <FormLabel id="demo-radio-buttons-group-label">{props.traitlist[props.blockstate][props.traitstate]}</FormLabel>
+                            <FormLabel id="demo-radio-buttons-group-label"><span style={{color: '#000000', fontSize: 18}}>{props.traitlist[props.blockstate][props.traitstate]}</span>
+                            <p><em>A person who allows things to happen or accepts what others do, without resistance or trying to change anything.</em></p>              
+                            </FormLabel>
                             <RadioGroup row aria-labelledby="demo-radio-buttons-group-label" value={props.rating} >
                                 <FormLabel labelPlacement="start">Not at all Passive</FormLabel>
                                 <FormControlLabel value="1" control={<Radio />} label="1" labelPlacement='bottom'/>
@@ -57,9 +62,9 @@ export const TraitRatings = ( props ) => {
                         </FormControl>
                     </>
                 }
-
+            
             </Typography>
             </Grid>
         </>
-    )
-}
+    );
+};
