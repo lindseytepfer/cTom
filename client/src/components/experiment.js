@@ -34,7 +34,7 @@ const data = {'Block1': {'target10': {'faceTrait': {'Bossy': 0,
 'partnerTrait': {'Easygoing': 0, 'Passive': 0, 'Bossy': 0},
 'partnerState': {'Impact': 0, 'Valence': 0, 'Rationality': 0}}}}
 
-const videoDurations = {'target1':115,
+const videoDurations = {'target1':115000,
   'target2':161000,
   'target3':173000,
   'target4':80000,
