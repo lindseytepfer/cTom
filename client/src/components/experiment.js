@@ -98,12 +98,20 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
         }
     }
     
+    // ADVANCING TO THE NEXT BLOCK
+    const advanceBlock = () => {
+      setBlockState((prev) => prev + 1);
+      setTargetState((prev) => prev + 1);
+      setStimState(0);
+      setTraitState(0);
+      setReady([])
+    }
     // WEBSOCKET EVENT HANDLING
-    const handleSocket = () => {
+    const handleSocket = () => { //sends a message to the backend 
         let socketId = socket.id;
         socket.emit("client_ready",socketId);
       }
-
+    // receives socket_id from the back end and adds it to Ready list state
     useEffect(() => {
         socket.on("server_ready", (socket_id) => {
             setReady((ready) => [...new Set([...ready, socket_id])])
@@ -112,24 +120,17 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
 
     //PROGRESS TRIAL WHEN BOTH PARTICIPANTS ARE READY
       useEffect(() => {
-        if (ready.length === 2) {
+        if (ready.length === 2 && stimState !== 15) {
           setStimState((prev) => prev + 1);
-          }
+          setReady([])
+        } else if (ready.length === 2 && stimState === 15){
+          advanceBlock();
+        }
       }, [ready.length]);
-    
-
-    // ADVANCING TO THE NEXT BLOCK
-    const advanceBlock = () => {
-        setBlockState((prev) => prev + 1);
-        setTargetState((prev) => prev + 1);
-        setStimState(0);
-        setTraitState(0);
-      }
     
     // HANDLE STIMULI PRESENTATION
     const advanceStim = () => {
       setStimState((prev) => prev + 1)
-      setReady([]);
     }
 
     const advanceTrial = () => {
@@ -143,24 +144,19 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
     }
 
     const handleConvo = () => {
-      setReady([]);
       handleSocket();
     }
 
     const handleBlock = () => {
-      setReady([]);
-      handleSocket();
-      advanceBlock();
+      if (stimState === 15 && blockState !== 1) {
+        handleSocket();
+        postData();
+      } else if (stimState === 15 && blockState === 1) {
+        setContinueStudy(false);
     }
-  //   if (stimState === "endTrial" && blockState !== 1 && ready.length === 2) {
-  //       advanceBlock();
-  //   } else if (traitState === 33 && blockState === 1) {
-  //       setContinueStudy(false);
-  //   }
-  // }
-  
+  }
     // MONITOR STATE CHANGES
-    console.log("stimState:",stimState, "Trait state: ",traitState, "progress:",progress,ready.length)
+    console.log("stimState:",stimState, "Trait state: ",traitState, "ready_len:",ready.length)
     
     return (
         <>
