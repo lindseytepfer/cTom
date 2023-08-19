@@ -1,42 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TraitRatings } from './traitRatings.js';
 import { StateRatings } from './stateRatings.js';
 import { CountdownTimer } from './countdownTimer.js';
 import { Grid, Typography, Button, lighten } from "@mui/material";
 import axios from "axios";
 
-//import data from "/Users/f004p74/Desktop/web-dev/c-tom-app/src/ctom-data_0001.json"
+import data from "/Users/f004p74/Desktop/web-dev/cTom-experiment/client/src/ctom-data/ctom-data_0000.json"
+
 const stimList = ["faceTrait", "faceState", "partnerSync1","videoTrial","videoTrait", "videoState","predictTrait","predictState","partnerSync2",
   "convoTrial","convoTrait","convoState","selfState","partnerTrait","partnerState","endTrial"];
-//videoTrial = stimList[2]; convoTrial = stimList[7]
-
-const data = {'Block1': {'target10': {'faceTrait': {'Bossy': 0,
-'Easygoing': 0,
-'Passive': 0},
-'faceState': {'Impact': 0, 'Valence': 0, 'Rationality': 0},
-'videoTrait': {'Passive': 0, 'Easygoing': 0, 'Bossy': 0},
-'videoState': {'Valence': 0, 'Rationality': 0, 'Impact': 0},
-'predictTrait': {'Passive': 0, 'Easygoing': 0, 'Bossy': 0},
-'predictState': {'Impact': 0, 'Valence': 0, 'Rationality': 0},
-'convoTrait': {'Passive': 0, 'Easygoing': 0, 'Bossy': 0},
-'convoState': {'Impact': 0, 'Valence': 0, 'Rationality': 0},
-'selfState': {'Rationality': 0, 'Valence': 0, 'Impact': 0},
-'partnerTrait': {'Passive': 0, 'Bossy': 0, 'Easygoing': 0},
-'partnerState': {'Impact': 0, 'Valence': 0, 'Rationality': 0}}},
-'Block2': {'target13': {'faceTrait': {'Passive': 0,
-'Bossy': 0,
-'Easygoing': 0},
-'faceState': {'Valence': 0, 'Impact': 0, 'Rationality': 0},
-'videoTrait': {'Bossy': 0, 'Easygoing': 0, 'Passive': 0},
-'videoState': {'Valence': 0, 'Rationality': 0, 'Impact': 0},
-'predictTrait': {'Passive': 0, 'Easygoing': 0, 'Bossy': 0},
-'predictState': {'Impact': 0, 'Valence': 0, 'Rationality': 0},
-'convoTrait': {'Passive': 0, 'Easygoing': 0, 'Bossy': 0},
-'convoState': {'Impact': 0, 'Rationality': 0, 'Valence': 0},
-'selfState': {'Impact': 0, 'Rationality': 0, 'Valence': 0},
-'partnerTrait': {'Easygoing': 0, 'Passive': 0, 'Bossy': 0},
-'partnerState': {'Impact': 0, 'Valence': 0, 'Rationality': 0}}}}
-
 const blockList = [];
 const targetList = [];
 const traitList = [];
@@ -66,8 +38,12 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
     
     // HANDLE STIMULI PRESENTATION
     const [progress, setProgress] = useState(0);
-    const [continueStudy, setContinueStudy] = useState(true);
     const [ready, setReady] = useState([]);
+
+    // COLLECTING RESPONSE DATA
+    const handleChange = (e) => {
+      setRating(e.target.value);
+    };
 
     // UPDATING THE DATA OBJECT WITH PARTICIPANT RESPONSES
     const saveData = () => {
@@ -85,26 +61,13 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
         }
       }
     
-    //DETECT KEYPRESS
-    useEffect(() => {
-        document.addEventListener('keydown',detectKey,true)
-      }, [])
-      
-    const detectKey = (e) => {
-        if (0 < e < 5) {
-            setRating(e.key)
-        } else {
-            setRating(0)
-        }
-    }
-    
     // ADVANCING TO THE NEXT BLOCK
     const advanceBlock = () => {
       setBlockState((prev) => prev + 1);
       setTargetState((prev) => prev + 1);
       setStimState(0);
       setTraitState(0);
-      setReady([])
+      setReady([]);
     }
     // WEBSOCKET EVENT HANDLING
     const handleSocket = () => { //sends a message to the backend 
@@ -135,6 +98,7 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
 
     const advanceTrial = () => {
       saveData();
+      setRating("")
       setTraitState((prev) => prev + 1);
       setProgress((prev) => prev + 1);
       if (progress === 2){
@@ -148,15 +112,12 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
     }
 
     const handleBlock = () => {
-      if (stimState === 15 && blockState !== 1) {
+      if (stimState === 15 && blockState !== 1) { // update with 14 ? or 13 ? 
         handleSocket();
-        postData();
-      } else if (stimState === 15 && blockState === 1) {
-        setContinueStudy(false);
+      } 
     }
-  }
     // MONITOR STATE CHANGES
-    console.log("stimState:",stimState, "Trait state: ",traitState, "ready_len:",ready.length)
+    console.log(data)
     
     return (
         <>
@@ -166,8 +127,11 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
           <Typography style={{color: "#353834", fontSize: 20}} align="center">
             <p>How would you rate this person on the following trait?</p>
             <img src={`stim/${targetList[targetState]}/face.png`} alt="face" />
-            <TraitRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={rating} />
-            <Button onClick={advanceTrial}>Next</Button>
+            <TraitRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={rating} handleChange={handleChange} />
+            <Button style={{color: "#FFFFFF",
+                              fontSize: "15px",
+                              backgroundColor: "#15b08e"
+              }} onClick={advanceTrial}>Next</Button>
           </Typography>
           </Grid>
         </>
@@ -180,8 +144,11 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
             <p>How would you rate this person on the following state? </p>
             <img src={`stim/${targetList[targetState]}/face.png`} alt="face" />
           </Typography>
-          <StateRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={rating} />
-          <Button onClick={advanceTrial}>Next</Button>
+          <StateRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={rating} handleChange={handleChange} />
+          <Button style={{color: "#FFFFFF",
+                              fontSize: "15px",
+                              backgroundColor: "#15b08e"
+              }} onClick={advanceTrial}>Next</Button>
           </Grid>
         </>
         }
@@ -208,7 +175,12 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
           <Typography style={{color: "#353834", fontSize: 20}} align="center">
             <p>Please watch the following video: </p>
             <video src={`stim/${targetList[targetState]}/video.mp4`} width="640" height="360" autoPlay>Unable to load video.</video>
-            <Button onClick={advanceStim}>Continue</Button>
+              <div>
+              <Button style={{color: "#FFFFFF",
+                                fontSize: "15px",
+                                backgroundColor: "#15b08e"
+                }} onClick={advanceStim}>Continue</Button>
+              </div>
           </Typography>
           </Grid>
         </>
@@ -220,8 +192,11 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
           <Typography style={{color: "#353834", fontSize: 20}} align="center">
             <p>After watching the video, how would you rate this person on the following trait? </p>
             <img src={`stim/${targetList[targetState]}/face.png`} alt="face" />
-            <TraitRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={rating} />
-            <Button onClick={advanceTrial}>Next</Button>
+            <TraitRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={rating} handleChange={handleChange} />
+            <Button style={{color: "#FFFFFF",
+                              fontSize: "15px",
+                              backgroundColor: "#15b08e"
+              }} onClick={advanceTrial}>Next</Button>
           </Typography>
           </Grid>
         </>
@@ -233,8 +208,11 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
             <Typography style={{color: "#353834", fontSize: 20}} align="center">
                 <p>After watching the video, how would you rate this person on the following state? </p>
                 <img src={`stim/${targetList[targetState]}/face.png`} alt="face" />
-                <StateRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={rating} />
-                <Button onClick={advanceTrial}>Next</Button>
+                <StateRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={rating} handleChange={handleChange} />
+                <Button style={{color: "#FFFFFF",
+                              fontSize: "15px",
+                              backgroundColor: "#15b08e"
+              }} onClick={advanceTrial}>Next</Button>
             </Typography>
             </Grid>
             </>
@@ -246,8 +224,11 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
             <Typography style={{color: "#353834", fontSize: 20}} align="center">
                 <p>After watching the video, how do you think <span style={{color: '#15b08e'}}><strong>your partner</strong></span> would rate this person on the following trait? </p>
                 <img src={`stim/${targetList[targetState]}/face.png`} alt="face" />
-                <TraitRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={rating} />
-                <Button onClick={advanceTrial}>Next</Button>
+                <TraitRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={rating} handleChange={handleChange} />
+                <Button style={{color: "#FFFFFF",
+                              fontSize: "15px",
+                              backgroundColor: "#15b08e"
+              }} onClick={advanceTrial}>Next</Button>
             </Typography>
             </Grid>
             </>
@@ -259,8 +240,11 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
             <Typography style={{color: "#353834", fontSize: 20}} align="center">
                 <p>After watching the video, how do you think <span style={{color: '#15b08e'}}><strong>your partner</strong></span> would rate this person on the following state? </p>
                 <img src={`stim/${targetList[targetState]}/face.png`} alt="face" />
-            <StateRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={rating} />
-            <Button onClick={advanceTrial}>Next</Button>
+            <StateRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={rating} handleChange={handleChange} />
+            <Button style={{color: "#FFFFFF",
+                              fontSize: "15px",
+                              backgroundColor: "#15b08e"
+            }} onClick={advanceTrial}>Next</Button>
             </Typography>
             </Grid>
             </>
@@ -307,8 +291,11 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
             <Typography style={{color: "#353834", fontSize: 20}} align="center">
                 <p>After discussing this person with your partner, how would you rate this person on the following trait?</p>
                 <img src={`stim/${targetList[targetState]}/face.png`} alt="face" />
-                <TraitRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={rating} />
-                <Button onClick={advanceTrial}>Next</Button>
+                <TraitRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={rating} handleChange={handleChange} />
+                <Button style={{color: "#FFFFFF",
+                              fontSize: "15px",
+                              backgroundColor: "#15b08e"
+              }} onClick={advanceTrial}>Next</Button>
             </Typography>
             </Grid>
             </>
@@ -321,8 +308,11 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
                 <p>After discussing this person with your partner, how would you rate this person on the following state?</p>
                 <img src={`stim/${targetList[targetState]}/face.png`} alt="face" />
             </Typography>
-            <StateRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={rating} />
-            <Button onClick={advanceTrial}>Next</Button>
+            <StateRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={rating} handleChange={handleChange} />
+            <Button style={{color: "#FFFFFF",
+                              fontSize: "15px",
+                              backgroundColor: "#15b08e"
+              }} onClick={advanceTrial}>Next</Button>
             </Grid>
             </>
         }
@@ -334,8 +324,11 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
                 <p>Now, tell us about <strong>yourself</strong>!</p>
                 <p>Please rate your current mental state:</p>
             </Typography>
-            <StateRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={rating} />
-            <Button onClick={advanceTrial}>Next</Button>
+            <StateRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={rating} handleChange={handleChange} />
+            <Button style={{color: "#FFFFFF",
+                              fontSize: "15px",
+                              backgroundColor: "#15b08e"
+              }} onClick={advanceTrial}>Next</Button>
             </Grid>
             </>
         }
@@ -347,8 +340,11 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
                 <p>Next, tell us what you think about <span style={{color: '#15b08e'}}><strong>your partner</strong></span>! </p>
                 <p>How would you rate your partner on the following trait?</p>
             </Typography>
-            <TraitRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={rating} />
-            <Button onClick={advanceTrial}>Next</Button>
+            <TraitRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={rating} handleChange={handleChange} />
+            <Button style={{color: "#FFFFFF",
+                              fontSize: "15px",
+                              backgroundColor: "#15b08e"
+              }} onClick={advanceTrial}>Next</Button>
             </Grid>
             </>
         }
@@ -358,8 +354,11 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
             <Grid container justifyContent="center" paddingTop={10}>
             <Typography style={{color: "#353834", fontSize: 20}} align="center">
                 <p>How would you describe <span style={{color: '#15b08e'}}><strong>your partner's</strong></span> current level of this state?</p>
-            <StateRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={rating} />
-            <Button onClick={advanceTrial}>Next</Button>
+            <StateRatings traitlist={traitList} blockstate={blockState} traitstate={traitState} rating={rating} handleChange={handleChange} />
+            <Button style={{color: "#FFFFFF",
+                              fontSize: "15px",
+                              backgroundColor: "#15b08e"
+              }} onClick={advanceTrial}>Next</Button>
             </Typography>
             </Grid>
             </>
@@ -380,7 +379,7 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
         </>
       }
 
-      {stimList[stimState] === "endTrial" && blockState === 1 && continueStudy === false && 
+      {stimList[stimState] === "endTrial" && blockState === 1 &&
         <>
           <Grid container justifyContent="center">
           <Typography style={{color: "#353834", fontSize: 20}} align="center">
