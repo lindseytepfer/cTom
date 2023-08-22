@@ -13,7 +13,7 @@ export const StateRatings = ( props ) => {
                         <FormControl>
                         <FormLabel id="demo-radio-buttons-group-label"><span style={{color: '#000000', fontSize: 18}}>{props.traitlist[props.blockstate][props.traitstate]}</span></FormLabel>
                         <p><em>States charactersized by how pleasant & agreeable or unpleasant & disagreeable they are.</em></p>
-                            <RadioGroup row aria-labelledby="demo-radio-buttons-group-label" value={props.rating} >
+                            <RadioGroup row aria-labelledby="demo-radio-buttons-group-label" value={props.rating} onChange={props.handleChange}>
                                 <FormLabel labelPlacement="start">Negative <p>(e.g., distress, terror, guilt, despair)</p></FormLabel>
                                 <FormControlLabel value="1" control={<Radio />} label="1" labelPlacement='bottom'/>
                                 <FormControlLabel value="2" control={<Radio />} label="2" labelPlacement='bottom'/>
@@ -31,7 +31,7 @@ export const StateRatings = ( props ) => {
                         <FormControl>
                         <FormLabel id="demo-radio-buttons-group-label"><span style={{color: '#000000', fontSize: 18}}>Social {props.traitlist[props.blockstate][props.traitstate]}</span></FormLabel>
                         <p><em>How a person's state relates to others; the impact this state may have on other people.</em></p>
-                            <RadioGroup row aria-labelledby="demo-radio-buttons-group-label" value={props.rating} >
+                            <RadioGroup row aria-labelledby="demo-radio-buttons-group-label" value={props.rating} onChange={props.handleChange}>
                                 <FormLabel labelPlacement="start">Low <p>(e.g., tired, bored, lonley, gloomy)</p></FormLabel>
                                 <FormControlLabel value="1" control={<Radio />} label="1" labelPlacement='bottom'/>
                                 <FormControlLabel value="2" control={<Radio />} label="2" labelPlacement='bottom'/>
@@ -49,8 +49,8 @@ export const StateRatings = ( props ) => {
                         <FormControl>
                         <FormLabel id="demo-radio-buttons-group-label"><span style={{color: '#000000', fontSize: 18}}>{props.traitlist[props.blockstate][props.traitstate]}</span></FormLabel>
                         <p><em>States of feeling; emotional states.</em></p>
-                            <RadioGroup row aria-labelledby="demo-radio-buttons-group-label" value={props.rating} >
-                                <FormLabel labelPlacement="bottom">Emotional</FormLabel>
+                            <RadioGroup row aria-labelledby="demo-radio-buttons-group-label" value={props.rating} onChange={props.handleChange}>
+                                <FormLabel labelPlacement="start">Emotional</FormLabel>
                                 <FormControlLabel value="1" control={<Radio />} label="1" labelPlacement='bottom'/>
                                 <FormControlLabel value="2" control={<Radio />} label="2" labelPlacement='bottom'/>
                                 <FormControlLabel value="3" control={<Radio />} label="3" labelPlacement='bottom'/>
