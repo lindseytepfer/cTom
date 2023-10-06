@@ -1,7 +1,7 @@
+import './App.css';
 import React, { useState } from "react";
 import { Intro } from "./components/intro";
 import { Experiment } from "./components/experiment";
-//import { Experiment } from "./components/expTester";
 import io from "socket.io-client";
 
 const socket = io.connect("http://localhost:3001/");
