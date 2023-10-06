@@ -12,7 +12,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
     cors: {
-        origins: ["http://localhost:3000/"],
+        origins: ["*"],
         methods: ["GET", "POST"],
     },
 });
@@ -34,7 +34,7 @@ io.on("connection", (socket) => {
     });
 });
 
-server.listen(3001, () => {
+server.listen(3001, "VESTA_IP", () => {
     console.log("SERVER IS RUNNING");
 });
 
@@ -46,7 +46,7 @@ app.use(express.urlencoded({extended:true})) //??
 const db = mysql.createConnection({
     user: 'root',
     host: 'localhost',
-    password: '***',
+    password: 'password',
     database: "ctomDB",
 });
 
