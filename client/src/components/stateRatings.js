@@ -19,6 +19,9 @@ export const StateRatings = ( props ) => {
                                 <FormControlLabel value="2" control={<Radio />} label="2" labelPlacement='bottom'/>
                                 <FormControlLabel value="3" control={<Radio />} label="3" labelPlacement='bottom'/>
                                 <FormControlLabel value="4" control={<Radio />} label="4" labelPlacement='bottom'/>
+                                <FormControlLabel value="5" control={<Radio />} label="5" labelPlacement='bottom'/>
+                                <FormControlLabel value="6" control={<Radio />} label="6" labelPlacement='bottom'/>
+                                <FormControlLabel value="7" control={<Radio />} label="7" labelPlacement='bottom'/>
                                 <FormLabel labelPlacement="end">Positive <p>(e.g., affection, pleasure, excitement, delight)</p></FormLabel>
                             </RadioGroup>
                         </FormControl>
@@ -37,6 +40,9 @@ export const StateRatings = ( props ) => {
                                 <FormControlLabel value="2" control={<Radio />} label="2" labelPlacement='bottom'/>
                                 <FormControlLabel value="3" control={<Radio />} label="3" labelPlacement='bottom'/>
                                 <FormControlLabel value="4" control={<Radio />} label="4" labelPlacement='bottom'/>
+                                <FormControlLabel value="5" control={<Radio />} label="5" labelPlacement='bottom'/>
+                                <FormControlLabel value="6" control={<Radio />} label="6" labelPlacement='bottom'/>
+                                <FormControlLabel value="7" control={<Radio />} label="7" labelPlacement='bottom'/>
                                 <FormLabel labelPlacement="end">High <p>(e.g., excited, outraged, humorous, affection)</p></FormLabel>
                             </RadioGroup>
                         </FormControl>
@@ -55,6 +61,9 @@ export const StateRatings = ( props ) => {
                                 <FormControlLabel value="2" control={<Radio />} label="2" labelPlacement='bottom'/>
                                 <FormControlLabel value="3" control={<Radio />} label="3" labelPlacement='bottom'/>
                                 <FormControlLabel value="4" control={<Radio />} label="4" labelPlacement='bottom'/>
+                                <FormControlLabel value="5" control={<Radio />} label="5" labelPlacement='bottom'/>
+                                <FormControlLabel value="6" control={<Radio />} label="6" labelPlacement='bottom'/>
+                                <FormControlLabel value="7" control={<Radio />} label="7" labelPlacement='bottom'/>
                                 <FormLabel labelPlacement="end">Rational</FormLabel>
                             </RadioGroup>
                         </FormControl>
