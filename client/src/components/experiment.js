@@ -41,6 +41,7 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
     const [ready, setReady] = useState([]);
     const [alert, setAlert] = useState(false);
     const [skipped, setSkipped] = useState(false);
+    const [clicked, setClicked] = useState(false);
 
     // COLLECTING RESPONSE DATA
     const handleChange = (e) => {
@@ -54,7 +55,7 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
     const trait = traitList[blockState][traitState]
 
     const sendData = () => {
-      axios.post('http://localhost:3001/',{
+      axios.post('http://localhost:4001/',{
         pairID:pairID,
         subjectID:subjectID,
         block:block,
@@ -74,11 +75,13 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
       setStimState(0);
       setTraitState(0);
       setReady([]);
+      setClicked(false);
       setRating(0);
     }
 
     // WEBSOCKET EVENT HANDLING
     const handleSocket = () => { //sends a message to the backend 
+        setClicked(true);
         let socketId = socket.id;
         socket.emit("client_ready",socketId);
       }
@@ -91,14 +94,29 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
     },[handleSocket])
 
     //PROGRESS TRIAL WHEN BOTH PARTICIPANTS ARE READY
-      useEffect(() => {
-        if (ready.length === 2 && stimState !== 13) {
-          setStimState((prev) => prev + 1);
-          setReady([])
-        } else if (ready.length === 2 && stimState === 13){
-          advanceBlock();
-        }
-      }, [ready.length]);
+    useEffect(() => {
+      if (ready.length === 2 && stimState !== 13) {
+        setStimState((prev) => prev + 1);
+        setReady([]);
+        setClicked(false);
+      } else if (ready.length === 2 && stimState === 13){
+        advanceBlock();
+      }
+    }, [ready.length]);
+    
+    //PROGRESS TRIAL IF CONNECTION IS LOST
+    useEffect(()=>{
+      if (clicked && ready.length<2) {
+
+        const timer = setTimeout(()=>{
+          setReady((ready) => [...new Set([...ready, "TIMEOUT_ADVANCE"])]);
+          console.log("connection disrupted...forcing trial advance");
+        }, 25000)
+
+        return () => clearTimeout(timer);
+
+      }
+    },[clicked])
     
     // HANDLE STIMULI PRESENTATION
     const advanceStim = () => {
