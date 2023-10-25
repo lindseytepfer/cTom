@@ -2,32 +2,44 @@ import React, { useState, useEffect } from 'react';
 import { TraitRatings } from './traitRatings.js';
 import { StateRatings } from './stateRatings.js';
 import { CountdownTimer } from './countdownTimer.js';
-import { Grid, Typography, Button, lighten, RadioGroup, FormControl, FormLabel, FormControlLabel, Radio } from "@mui/material";
+import { Grid, Typography, Button, RadioGroup, FormControl, FormLabel, FormControlLabel, Radio } from "@mui/material";
 import axios from "axios";
 
-import data from "/Users/f004p74/Documents/dartmouth/projects/cTOM/task/cTom-experiment/client/src/ctom-data/ctom_group_0000.json"
-
-const stimList = ["faceTrait", "faceState", "partnerSync1","videoTrial","videoTrait", "videoState","partnerPredict","partnerSync2",
-"convoTrial","convoTrait","convoState","partnerSurprise","partnerAgree","endTrial"]; // 14 items
-const blockList = [];
-const targetList = [];
-const traitList = [];
-
-for (let block in data) {
-let r = [];
-blockList.push(block)
-for (let target in data[block]) {
-  targetList.push(target)
-  for (let stimuli in data[block][target]){
-    for (let rating in data[block][target][stimuli]){
-      r.push(rating)
-    }
-  }
-}
-traitList.push(r)
-}
-
 export const Experiment = ( {subjectID, pairID, socket} ) => {
+
+  const [data, setData] = useState(0);
+
+  useEffect(() => {
+      import(`/Users/f004p74/Documents/dartmouth/projects/cTOM/task/cTom-experiment/client/src/ctom-data/ctom_group_000${pairID}.json`)
+        .then((module) => {
+          // Access the JSON data from the imported module
+          const x = module.default;
+          setData(x);
+        })
+        .catch((error) => {
+          console.error('Error loading JSON file:', error);
+        });
+    }, [subID]);
+    
+    const stimList = ["faceTrait", "faceState", "partnerSync1","videoTrial","videoTrait", "videoState","partnerPredict","partnerSync2",
+    "convoTrial","convoTrait","convoState","partnerSurprise","partnerAgree","endTrial"]; // 14 items
+    const blockList = [];
+    const targetList = [];
+    const traitList = [];
+    
+    for (let block in data) {
+    let r = [];
+    blockList.push(block)
+    for (let target in data[block]) {
+      targetList.push(target)
+      for (let stimuli in data[block][target]){
+        for (let rating in data[block][target][stimuli]){
+          r.push(rating)
+        }
+      }
+    }
+    traitList.push(r)
+    }
 
     // HANDLE RESPONSE COLLECTION
     const [blockState,setBlockState] = useState(0);
@@ -111,7 +123,7 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
         const timer = setTimeout(()=>{
           setReady((ready) => [...new Set([...ready, "TIMEOUT_ADVANCE"])]);
           console.log("connection disrupted...forcing trial advance");
-        }, 25000)
+        }, 15000)
 
         return () => clearTimeout(timer);
 
