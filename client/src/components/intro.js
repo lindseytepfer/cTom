@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Grid, Typography, Button } from "@mui/material";
 
-export const Intro = ({ pageEvent, socket, pairID, setPairID, subjectID, setSubjectID}) => {
+export const Intro = ({ pageEvent, socket, pairID, setPairID, setSubjectID}) => {
     const [idsReady, setIdsReady] = useState([]);
 
     useEffect(() => {

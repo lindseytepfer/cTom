@@ -5,22 +5,8 @@ import { CountdownTimer } from './countdownTimer.js';
 import { Grid, Typography, Button, RadioGroup, FormControl, FormLabel, FormControlLabel, Radio } from "@mui/material";
 import axios from "axios";
 
-export const Experiment = ( {subjectID, pairID, socket} ) => {
+export const Experiment = ( {subjectID, pairID, socket, data} ) => {
 
-  const [data, setData] = useState(0);
-
-  useEffect(() => {
-      import(`/Users/f004p74/Documents/dartmouth/projects/cTOM/task/cTom-experiment/client/src/ctom-data/ctom_group_000${pairID}.json`)
-        .then((module) => {
-          // Access the JSON data from the imported module
-          const x = module.default;
-          setData(x);
-        })
-        .catch((error) => {
-          console.error('Error loading JSON file:', error);
-        });
-    }, [subID]);
-    
     const stimList = ["faceTrait", "faceState", "partnerSync1","videoTrial","videoTrait", "videoState","partnerPredict","partnerSync2",
     "convoTrial","convoTrait","convoState","partnerSurprise","partnerAgree","endTrial"]; // 14 items
     const blockList = [];
@@ -54,6 +40,9 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
     const [alert, setAlert] = useState(false);
     const [skipped, setSkipped] = useState(false);
     const [clicked, setClicked] = useState(false);
+    const [ST, setST] = useState(0); // (stimulus) start time
+    const [TT, setTT] = useState(0) // trait start time
+    const [RT, setRT] = useState(0); // reaction time
 
     // COLLECTING RESPONSE DATA
     const handleChange = (e) => {
@@ -74,7 +63,10 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
         target:target,
         stim:stim,
         trait:trait,
-        rating:rating
+        rating:rating,
+        ST:ST,
+        TT:TT,
+        RT:RT
       }).then(() => {
         console.log("values inserted.");
       });
@@ -136,6 +128,7 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
         if (rating===0){
           setSkipped(true);
         } else {
+          setRT(Date.now() - TT);
           sendData();
           setStimState((prev) => prev + 1);
           setSkipped(false);
@@ -145,6 +138,7 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
         if (rating===0){
           setSkipped(true);
         } else {
+          setRT(Date.now() - TT);
           sendData();
           setStimState((prev) => prev + 1);
           setSkipped(false);
@@ -158,6 +152,7 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
       if (rating === 0){
         setSkipped(true);
       } else {
+        setRT(Date.now() - TT);
         sendData();
         setSkipped(false);
         setRating(0)
@@ -176,7 +171,7 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
     }
 
     const handleBlock = () => {
-      if (stimState === 13 && blockState !== 13) { // update with 14 ? or 13 ? 
+      if (stimState === 13 && blockState !== 13) { 
         handleSocket();
       } 
     }
@@ -195,7 +190,14 @@ export const Experiment = ( {subjectID, pairID, socket} ) => {
       }
     },[stimState])
 
+    useEffect(()=>{
+      setST(Date.now());
+    }, [stimState])
     
+    useEffect(()=>{
+      setTT(Date.now());
+    }, [traitState])
+
     // MONITOR STATE CHANGES
     console.log("rating:", rating)
     
